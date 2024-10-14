@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/android_backdrop_nomab"
+    tools:context=".MainActivity">
+
+    <!-- Logo Image -->
+    <ImageView
+        android:id="@+id/Main_Activity_Logo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/capture_photoroom_png_photoroom__3_"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Welcome Text -->
+    <TextView
+        android:id="@+id/Welcome_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Welcome to MAB Panoptes \n Biometric Verification App"
+        android:textAlignment="center"
+        android:textColor="@color/secondary_dark_blue"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/Main_Activity_Logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Selection Text -->
+    <TextView
+        android:id="@+id/Selection_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Please select an option below"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/Welcome_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Fingerprint Recognition Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_fingerprint"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="36dp"
+        app:layout_constraintTop_toBottomOf="@id/Selection_text"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="84dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/black">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btn_fingerprint_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/identification"
+                android:contentDescription="fingerprint" />
+
+            <TextView
+                android:id="@+id/btn_fingerprint_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fingerprint"
+                android:paddingBottom="8dp"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Face Recognition Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_face"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Selection_text"
+        android:layout_marginTop="84dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/black">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btn_face_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/face_detection"
+                android:contentDescription="face_recognition" />
+
+            <TextView
+                android:id="@+id/btn_face_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Face Recognition"
+                android:paddingBottom="8dp"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

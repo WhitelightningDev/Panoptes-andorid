@@ -1,0 +1,28 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme customized for dark theme -->
+    <style name="Base.Theme.Panoptes" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary color (for dark theme, use the secondary dark blue) -->
+        <item name="colorPrimary">@color/secondary_dark_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_blue</item>
+
+        <!-- Secondary color (accent color) -->
+        <item name="colorSecondary">@color/primary_blue</item>
+
+        <!-- Background color (dark grey to fit night mode) -->
+        <item name="android:colorBackground">#121212</item>
+
+        <!-- Surface color (used for cards, sheets, etc., set to a darker tone) -->
+        <item name="colorSurface">#1E1E1E</item>
+
+        <!-- Text colors (light colors for visibility on dark background) -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/grey</item>
+
+        <!-- Button colors (use blue for buttons, with white text) -->
+        <item name="android:colorButtonNormal">@color/secondary_dark_blue</item>
+        <item name="android:textColor">@color/white</item>
+
+        <!-- Divider and border color (lighter grey to contrast with dark surface) -->
+        <item name="colorOnSurfaceVariant">#757575</item>
+    </style>
+</resources>

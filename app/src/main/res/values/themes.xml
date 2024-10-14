@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme with customized light theme -->
+    <style name="Base.Theme.Panoptes" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary color (used for the app bar, buttons, etc.) -->
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/secondary_dark_blue</item>
+
+        <!-- Secondary color (used for accent elements) -->
+        <item name="colorSecondary">@color/secondary_dark_blue</item>
+
+        <!-- Background color -->
+        <item name="android:colorBackground">@color/white</item>
+
+        <!-- Surface color (used for cards, sheets, etc.) -->
+        <item name="colorSurface">@color/white</item>
+
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/grey</item>
+
+        <!-- Button styles -->
+        <item name="android:colorButtonNormal">@color/primary_blue</item>
+        <item name="android:textColor">@color/white</item>
+
+        <!-- Divider and border color -->
+        <item name="colorOnSurfaceVariant">@color/grey</item>
+    </style>
+
+    <!-- Main app theme -->
+    <style name="Theme.Panoptes" parent="Base.Theme.Panoptes" />
+</resources>
