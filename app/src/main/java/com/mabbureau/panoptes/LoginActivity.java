@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText emailInput; // Changed from usernameInput to emailInput
+    private TextInputEditText emailInput;
     private TextInputEditText passwordInput;
     private Button loginButton;
     private Button signUpButton;
@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // Initialize UI elements
-        emailInput = findViewById(R.id.emailInput); // Ensure your layout has this ID
+        emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
         loginButton = findViewById(R.id.loginButton);
         signUpButton = findViewById(R.id.signUpButton);
@@ -52,12 +52,18 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(v -> handleSignUp());
 
         // Login button click
-        loginButton.setOnClickListener(v -> handleLogin());
+        loginButton.setOnClickListener(v -> validateAndLogin());
     }
 
-    private void handleLogin() {
-        String email = Objects.requireNonNull(emailInput.getText()).toString().trim(); // Changed variable name to email
+    private void validateAndLogin() {
+        String email = Objects.requireNonNull(emailInput.getText()).toString().trim();
         String password = Objects.requireNonNull(passwordInput.getText()).toString().trim();
+
+        // Validate inputs
+        if (email.isEmpty() || password.isEmpty()) {
+            showToast("Please fill in all fields.");
+            return;
+        }
 
         // Log for debugging
         Log.d("LoginActivity", "Attempting login with email: " + email + " and password: " + password);
@@ -66,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         performLogin(email, password);
     }
 
-    private void performLogin(String email, String password) { // Updated parameter from username to email
+    private void performLogin(String email, String password) {
         // Create Retrofit instance
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -74,42 +80,40 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         ApiService apiService = retrofit.create(ApiService.class);
-        LoginRequest loginRequest = new LoginRequest(email, password); // Create LoginRequest with email
+        LoginRequest loginRequest = new LoginRequest(email, password);
 
-        Log.d("LoginActivity", "Sending login request with: " + loginRequest.toString()); // Log the request
+        Log.d("LoginActivity", "Sending login request with: " + loginRequest.toString());
 
         Call<LoginResponse> call = apiService.login(loginRequest);
 
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                Log.d("LoginActivity", "Response: " + response.body()); // Log the response
+                Log.d("LoginActivity", "Response Code: " + response.code());
+                Log.d("LoginActivity", "Response Message: " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
-                    if (response.body().isSuccess()) {
-                        String token = response.body().getToken();
-                        saveUserToken(token);
+                    // Save token and navigate to next activity
+                    String token = response.body().getToken();
+                    saveUserToken(token);
 
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-                    }
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                    showToast("Login Successful");
                 } else {
-                    Toast.makeText(LoginActivity.this, "Login failed: " + response.message(), Toast.LENGTH_SHORT).show();
+                    Log.e("LoginActivity", "Error Body: " + response.errorBody());
+                    showToast("Login failed: " + (response.body() != null ? response.body().getMessage() : "Invalid credentials"));
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Login failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                showToast("Login failed: " + t.getMessage());
             }
         });
     }
 
     private void saveUserToken(String token) {
-        // Implement token saving to SharedPreferences or other storage
         SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("token", token);
@@ -124,5 +128,10 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignUp() {
         Intent intent = new Intent(LoginActivity.this, SignInActivity.class);
         startActivity(intent);
+    }
+
+    // Helper function to show Toast messages
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
