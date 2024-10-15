@@ -1,36 +1,43 @@
 package com.mabbureau.panoptes;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Toast; // Import Toast for error messages
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText usernameInput;
+    private TextInputEditText emailInput; // Changed from usernameInput to emailInput
     private TextInputEditText passwordInput;
-    private Button loginButton; // Changed this to reflect the correct button
-    private Button signUpButton; // This should point to the Sign Up functionality
+    private Button loginButton;
+    private Button signUpButton;
     private Button forgotPasswordButton;
 
-    // Simulated user credentials
-    private static final String VALID_USERNAME = "DanDev";
-    private static final String VALID_PASSWORD = "Daniel@95";
+    // Base URL for your API
+    private static final String BASE_URL = "http://10.0.0.175:5000/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login); // Set the content view for the login layout
+        setContentView(R.layout.activity_login);
 
         // Initialize UI elements
-        usernameInput = findViewById(R.id.usernameInput);
+        emailInput = findViewById(R.id.emailInput); // Ensure your layout has this ID
         passwordInput = findViewById(R.id.passwordInput);
-        loginButton = findViewById(R.id.loginButton); // Initialize login button
-        signUpButton = findViewById(R.id.signUpButton); // Initialize sign up button
+        loginButton = findViewById(R.id.loginButton);
+        signUpButton = findViewById(R.id.signUpButton);
         forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
 
         // Set up button click listeners
@@ -39,61 +46,83 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setUpListeners() {
         // Forgot Password button click
-        forgotPasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleForgotPassword();
-            }
-        });
+        forgotPasswordButton.setOnClickListener(v -> handleForgotPassword());
 
         // Sign Up button click
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleSignUp(); // Method to handle sign up
-            }
-        });
+        signUpButton.setOnClickListener(v -> handleSignUp());
 
         // Login button click
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleLogin(); // Changed method name to handleLogin
-            }
-        });
+        loginButton.setOnClickListener(v -> handleLogin());
     }
 
     private void handleLogin() {
-        String username = usernameInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String email = Objects.requireNonNull(emailInput.getText()).toString().trim(); // Changed variable name to email
+        String password = Objects.requireNonNull(passwordInput.getText()).toString().trim();
 
         // Log for debugging
-        Log.d("LoginActivity", "Attempting login with username: " + username + " and password: " + password);
+        Log.d("LoginActivity", "Attempting login with email: " + email + " and password: " + password);
 
-        // Check for valid credentials
-        if (isValidCredentials(username, password)) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class); // Redirect to MainActivity
-            startActivity(intent);
-            finish(); // Optional: Finish this activity to prevent going back to it
-            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show(); // Confirm login success
-        } else {
-            // Show an error message
-            Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-        }
+        // Make API call for login
+        performLogin(email, password);
     }
 
-    private boolean isValidCredentials(String username, String password) {
-        // Check the provided username and password against predefined values
-        return username.equals(VALID_USERNAME) && password.equals(VALID_PASSWORD);
+    private void performLogin(String email, String password) { // Updated parameter from username to email
+        // Create Retrofit instance
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+        LoginRequest loginRequest = new LoginRequest(email, password); // Create LoginRequest with email
+
+        Log.d("LoginActivity", "Sending login request with: " + loginRequest.toString()); // Log the request
+
+        Call<LoginResponse> call = apiService.login(loginRequest);
+
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                Log.d("LoginActivity", "Response: " + response.body()); // Log the response
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().isSuccess()) {
+                        String token = response.body().getToken();
+                        saveUserToken(token);
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(LoginActivity.this, "Login failed: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Login failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void saveUserToken(String token) {
+        // Implement token saving to SharedPreferences or other storage
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("token", token);
+        editor.apply(); // Save changes
     }
 
     private void handleForgotPassword() {
         Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-        startActivity(intent); // Start the Forgot Password activity
+        startActivity(intent);
     }
 
     private void handleSignUp() {
-        Intent intent = new Intent(LoginActivity.this, SignInActivity.class); // Assuming SignInActivity is for sign up
-        startActivity(intent); // Start the Sign Up activity
+        Intent intent = new Intent(LoginActivity.this, SignInActivity.class);
+        startActivity(intent);
     }
 }

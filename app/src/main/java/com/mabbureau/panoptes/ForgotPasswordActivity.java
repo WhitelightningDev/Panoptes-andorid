@@ -1,5 +1,6 @@
 package com.mabbureau.panoptes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,11 +12,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     private TextInputEditText emailInput;
     private Button sendResetLinkButton;
+    private Button backToLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password); // Set the content view for the forgot password layout
+
+        backToLoginButton = findViewById(R.id.Back_to_Login);
 
         // Initialize UI elements
         emailInput = findViewById(R.id.emailInput);
@@ -28,6 +32,24 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 handleSendResetLink();
             }
         });
+
+        // Set up button click listeners
+        Listeners();
+    }
+
+    private void Listeners(){
+        backToLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HandleBackToLogin();
+            }
+        });
+
+    }
+
+    private void HandleBackToLogin(){
+        Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
     private void handleSendResetLink() {
@@ -46,4 +68,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         // Optionally, you can redirect the user back to the LoginActivity
         finish(); // Close this activity and return to the previous one
     }
+
+
 }
