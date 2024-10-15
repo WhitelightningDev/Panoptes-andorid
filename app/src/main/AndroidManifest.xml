@@ -46,6 +46,9 @@
             android:exported="true" />
         <activity android:name=".IdProfileActivity"
             android:exported="true" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".HelpActivity" />
 
 
     </application>
