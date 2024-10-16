@@ -44,11 +44,12 @@
 
         <activity android:name=".SignInActivity"
             android:exported="true" />
-        <activity android:name=".IdProfileActivity"
-            android:exported="true" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".HelpActivity" />
+        <activity android:name=".WizardIntroActivity"/>
+        <activity android:name=".PopiaActivity"/>
+        <activity android:name=".Step1Activity"/>
 
 
     </application>

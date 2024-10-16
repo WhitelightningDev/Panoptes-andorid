@@ -10,4 +10,7 @@ public interface ApiService {
 
     @POST("api/users/signup") // Endpoint for signing up
     Call<SignupResponse> signUp(@Body SignInRequest signUpRequest); // Method for signing up
+
+    @POST("api/users/check") // New endpoint for checking if a user exists
+    Call<UserCheckResponse> checkUserExists(@Body UserCheckRequest userCheckRequest); // Method for checking if a user exists
 }
