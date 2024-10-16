@@ -9,12 +9,23 @@
     android:background="@drawable/android_backdrop_nomab"
     tools:context=".MainActivity">
 
+    <!-- Main Content -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Your existing UI components go here -->
+        <!-- Toolbar (AppBar) -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:background="@color/primary_blue"
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+            android:title="Main Activity"
+            app:navigationIcon="@drawable/menu_black"
+            app:layout_constraintTop_toTopOf="parent"/>
 
+        <!-- Your Main Activity Content -->
         <ImageView
             android:id="@+id/Main_Activity_Logo"
             android:layout_width="150dp"
@@ -22,9 +33,8 @@
             android:layout_marginTop="16dp"
             android:src="@drawable/capture_photoroom_png_photoroom__3_"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/topAppBar" />
 
         <TextView
             android:id="@+id/Welcome_text"
@@ -36,7 +46,6 @@
             android:textColor="@color/secondary_dark_blue"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Main_Activity_Logo" />
 
@@ -50,17 +59,14 @@
             android:textSize="20sp"
             app:layout_constraintTop_toBottomOf="@+id/Welcome_text" />
 
-        <!-- Your card views go here -->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Navigation Drawer -->
+    <!-- Side Navigation View -->
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
+        android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu" />
+        app:menu="@menu/drawer_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

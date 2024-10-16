@@ -50,6 +50,9 @@
         <activity android:name=".WizardIntroActivity"/>
         <activity android:name=".PopiaActivity"/>
         <activity android:name=".Step1Activity"/>
+        <activity android:name=".Step2Activity"/>
+        <activity android:name=".Step3Activity"/>
+        <activity android:name=".Step4Activity"/>
 
 
     </application>

@@ -1,16 +1,18 @@
 package com.mabbureau.panoptes;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,35 +33,52 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Initialize DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.navigation_view);
 
+        // Set up the top app bar (Toolbar)
+        MaterialToolbar toolbar = findViewById(R.id.topAppBar);
+        setSupportActionBar(toolbar);
+
+        // Enable drawer toggle button in the app bar
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Set up navigation item selection
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.nav_profile) {
-                    startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-                } else if (item.getItemId() == R.id.nav_settings) {
-                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                } else if (item.getItemId() == R.id.nav_help) {
-                    startActivity(new Intent(MainActivity.this, HelpActivity.class));
-                }
-                drawerLayout.closeDrawers(); // Close the drawer after selection
-                return true;
-            }
+        // Handle navigation menu item clicks
+        navigationView.setNavigationItemSelectedListener(item -> {
+            handleNavigationItemSelected(item);
+            return true;
         });
     }
 
+    // Handle the navigation item selection
+    private void handleNavigationItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.nav_home) {
+            // Handle home action
+            // TODO: Implement navigation logic for Home
+        } else if (itemId == R.id.nav_profile) {
+            // Handle profile action
+            // TODO: Implement navigation logic for Profile
+        } else if (itemId == R.id.nav_settings) {
+            // Handle settings action
+            // TODO: Implement navigation logic for Settings
+        }
+
+        // Close the navigation drawer after selection
+        drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(navigationView)) {
-            drawerLayout.closeDrawer(navigationView);
+        // Close the drawer if it is open
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
