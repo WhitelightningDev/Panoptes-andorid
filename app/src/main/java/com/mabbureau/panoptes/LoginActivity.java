@@ -8,9 +8,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
-
 import java.util.Objects;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +30,15 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Check if the user is already logged in
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        if (sharedPreferences.getBoolean("isLoggedIn", false)) {
+            // If logged in, start MainActivity and finish this activity
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         // Initialize UI elements
         emailInput = findViewById(R.id.emailInput);
@@ -82,26 +89,24 @@ public class LoginActivity extends AppCompatActivity {
         ApiService apiService = retrofit.create(ApiService.class);
         LoginRequest loginRequest = new LoginRequest(email, password);
 
-        Log.d("LoginActivity", "Sending login request with: " + loginRequest.toString());
-
         Call<LoginResponse> call = apiService.login(loginRequest);
 
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                Log.d("LoginActivity", "Response Code: " + response.code());
-                Log.d("LoginActivity", "Response Message: " + response.message());
                 if (response.isSuccessful() && response.body() != null) {
-                    // Save token and navigate to next activity
+                    // Save token, user ID, and login state
                     String token = response.body().getToken();
+                    String userId = response.body().getUserId(); // Make sure this exists in your LoginResponse
                     saveUserToken(token);
+                    saveUserId(userId); // Save the user ID
+                    saveLoginState(true); // Set login state to true
 
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                     showToast("Login Successful");
                 } else {
-                    Log.e("LoginActivity", "Error Body: " + response.errorBody());
                     showToast("Login failed: " + (response.body() != null ? response.body().getMessage() : "Invalid credentials"));
                 }
             }
@@ -113,10 +118,26 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    // Add this method to save userId
+    private void saveUserId(String userId) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userId", userId); // Save the user ID
+        editor.apply(); // Save changes
+    }
+
+
     private void saveUserToken(String token) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("token", token);
+        editor.apply(); // Save changes
+    }
+
+    private void saveLoginState(boolean isLoggedIn) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isLoggedIn", isLoggedIn);
         editor.apply(); // Save changes
     }
 

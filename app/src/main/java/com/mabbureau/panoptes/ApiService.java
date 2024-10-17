@@ -2,6 +2,8 @@ package com.mabbureau.panoptes;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.POST;
 
 public interface ApiService {
@@ -11,6 +13,6 @@ public interface ApiService {
     @POST("api/users/signup") // Endpoint for signing up
     Call<SignupResponse> signUp(@Body SignInRequest signUpRequest); // Method for signing up
 
-    @POST("api/users/check") // New endpoint for checking if a user exists
-    Call<UserCheckResponse> checkUserExists(@Body UserCheckRequest userCheckRequest); // Method for checking if a user exists
+//    @GET("api/users/getById/{userId}") // Updated Endpoint for getting user details
+//    Call<UserResponse> getUserById(@Path("userId") String userId); // Method for fetching user details
 }

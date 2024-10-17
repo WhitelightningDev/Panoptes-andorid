@@ -4,12 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,7 +25,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SignInActivity extends AppCompatActivity {
 
     private TextInputEditText nameInput, surnameInput, contactInput, emailInput, passwordInput;
-    private MaterialButton signInButton, forgotPasswordButton;
     private static final String BASE_URL = "http://10.0.0.175:5000/";
 
     @Override
@@ -28,14 +32,20 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+        // Check if the user is already signed in
+        if (isUserSignedIn()) {
+            navigateToWizardIntro();
+            return; // Exit onCreate
+        }
+
         // Initialize Views
         nameInput = findViewById(R.id.NameInput);
         surnameInput = findViewById(R.id.SurnameInput);
         contactInput = findViewById(R.id.ContactInput);
         emailInput = findViewById(R.id.EmailInput);
         passwordInput = findViewById(R.id.PasswordInput);
-        signInButton = findViewById(R.id.signInButton);
-        forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
+        MaterialButton signInButton = findViewById(R.id.signInButton);
+        MaterialButton forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
 
         // Set OnClickListener for Sign In Button
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -54,13 +64,33 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
+    // Check if the user is already signed in
+    private boolean isUserSignedIn() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+        String token = sharedPreferences.getString("token", null);
+        boolean isSignedIn = userId != null && token != null;
+
+        // Debug log
+        Log.d("SignInActivity", "isUserSignedIn: userId=" + userId + ", token=" + token + ", isSignedIn=" + isSignedIn);
+
+        return isSignedIn;
+    }
+
+    // Navigate to WizardIntroActivity
+    private void navigateToWizardIntro() {
+        Intent intent = new Intent(SignInActivity.this, WizardIntroActivity.class);
+        startActivity(intent);
+        finish(); // Close this activity
+    }
+
     // Validate inputs and call the API
     private void validateAndSignIn() {
-        String name = nameInput.getText().toString().trim();
-        String surname = surnameInput.getText().toString().trim();
-        String contact = contactInput.getText().toString().trim();
-        String email = emailInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String name = Objects.requireNonNull(nameInput.getText()).toString().trim();
+        String surname = Objects.requireNonNull(surnameInput.getText()).toString().trim();
+        String contact = Objects.requireNonNull(contactInput.getText()).toString().trim();
+        String email = Objects.requireNonNull(emailInput.getText()).toString().trim();
+        String password = Objects.requireNonNull(passwordInput.getText()).toString().trim();
 
         if (validateInputs(name, surname, contact, email, password)) {
             // Create Retrofit instance
@@ -75,26 +105,32 @@ public class SignInActivity extends AppCompatActivity {
 
             call.enqueue(new Callback<SignupResponse>() {
                 @Override
-                public void onResponse(Call<SignupResponse> call, Response<SignupResponse> response) {
+                public void onResponse(@NonNull Call<SignupResponse> call, @NonNull Response<SignupResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        // Save token in SharedPreferences
-                        String token = response.body().getUserId(); // Assuming token is userId; adjust as necessary
-                        saveUserToken(token);
+                        SignupResponse signupResponse = response.body(); // Get the response body
+                        String userId = signupResponse.getUserId(); // Get the userId from the response
 
-                        // Show success toast message
-                        showToast("Sign Up successful!");
+                        if (userId != null && !userId.isEmpty()) {
+                            // Save user ID and token in SharedPreferences
+                            saveUserId(userId);
+                            saveUserToken(signupResponse.getToken()); // Save the token
 
-                        // Navigate to WizardIntroActivity
-                        Intent intent = new Intent(SignInActivity.this, WizardIntroActivity.class);
-                        startActivity(intent);
-                        finish(); // Optionally close SignInActivity
+                            // Show success toast message
+                            showToast("Sign Up successful!");
+
+                            // Navigate to WizardIntroActivity
+                            navigateToWizardIntro();
+                        } else {
+                            showToast("Sign Up successful, but user ID is not available.");
+                            navigateToWizardIntro();
+                        }
                     } else {
                         handleErrorResponse(response);
                     }
                 }
 
                 @Override
-                public void onFailure(Call<SignupResponse> call, Throwable t) {
+                public void onFailure(@NonNull Call<SignupResponse> call, @NonNull Throwable t) {
                     showToast("Sign Up failed: " + t.getMessage());
                 }
             });
@@ -140,12 +176,26 @@ public class SignInActivity extends AppCompatActivity {
         return true;
     }
 
+    // Save user ID to SharedPreferences
+    private void saveUserId(String userId) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userId", userId); // Save userId
+        editor.apply(); // Apply changes asynchronously
+
+        // Debug log
+        Log.d("SignInActivity", "saveUserId: userId=" + userId);
+    }
+
     // Save user token to SharedPreferences
     private void saveUserToken(String token) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("token", token);
         editor.apply(); // Apply changes asynchronously
+
+        // Debug log
+        Log.d("SignInActivity", "saveUserToken: token=" + token);
     }
 
     private void goToForgotPassword() {

@@ -15,10 +15,24 @@ public class SignInRequest {
         this.password = password;  // Fixed assignment here
     }
 
-    // Getters (optional, in case you need them elsewhere)
-    public String getName() { return name; }
-    public String getSurname() { return surname; }
-    public String getContact() { return contact; }
-    public String getEmail() { return email; }
-    public String getPassword() { return password; }
+    // Getters
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }

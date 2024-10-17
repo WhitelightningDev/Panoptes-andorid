@@ -4,6 +4,10 @@ public class LoginRequest {
     private String email;
     private String password;
 
+    // No-argument constructor (required for some serialization libraries)
+    public LoginRequest() {
+    }
+
     public LoginRequest(String email, String password) {
         this.email = email;
         this.password = password;
