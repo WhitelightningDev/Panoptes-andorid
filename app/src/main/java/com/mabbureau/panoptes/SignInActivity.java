@@ -24,6 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignInActivity extends AppCompatActivity {
 
+
     private TextInputEditText nameInput, surnameInput, contactInput, emailInput, passwordInput;
     private static final String BASE_URL = "http://10.0.0.175:5000/";
 
@@ -38,6 +39,7 @@ public class SignInActivity extends AppCompatActivity {
             return; // Exit onCreate
         }
 
+        MaterialButton Signup_next = findViewById(R.id.Signup_next);
         // Initialize Views
         nameInput = findViewById(R.id.NameInput);
         surnameInput = findViewById(R.id.SurnameInput);
@@ -55,6 +57,13 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+        Signup_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WizardNext();
+            }
+        });
+
         // Set OnClickListener for Forgot Password Button
         forgotPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +71,11 @@ public class SignInActivity extends AppCompatActivity {
                 goToForgotPassword();
             }
         });
+    }
+
+    private void WizardNext() {
+        Intent intent = new Intent(SignInActivity.this, WizardIntroActivity.class);
+        startActivity(intent);
     }
 
     // Check if the user is already signed in
